@@ -1,5 +1,7 @@
 (ns clj-seagull.core
-  (:gen-class))
+  (:require [loom.graph :as loom]
+            [clojure.string :as str]
+  (:gen-class)))
 
 (defn cooccurrences
   "Get coccurrences"
@@ -13,13 +15,15 @@
         (rest xs)))))
        
 (defn txt-to-lex-graph
-  "Turns a text document into a lexical graph"
   [txt]
-  ;; co-occurrence map to weighted graph
-  ;; sent w/ word tokens to cooccurrence map
-  ;; word tokenize sents
-  ;; sentence tokenize text
-  nil)
+  (loom/weighted-graph
+  (reduce 
+    (fn [acc nxt] 
+      (merge-with (fn [x y] (merge-with + x y)) acc (cooccurrences nxt)))
+    {}
+    ;;TODO: replace with real tokenization functions
+    (map (fn [s] (filter (fn [x] (not= "" x)) (str/split s #"\s+")))
+      (str/split txt #"[.?!]")))))
 
 (defn random-walk
   "Randomly walk graph and return the path"
