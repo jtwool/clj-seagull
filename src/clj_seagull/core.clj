@@ -53,11 +53,11 @@
   (map (fn [x] (seeded-walk-freqs g steps walks x)) seeds))
 
 (defn generate-lexicon
-  "Generate a contrastive lexicon by juxtiposing two seeded random walks"
-  [frqs1 frqs2]
-  ;; give each tkn a score = (f1 / f1+f2)
-  ;; normalize for -1 to 1
-  nil)
+  "Generate a contrastive lexicon by juxtiposing multiple seeded random walks"
+  [fs]
+  (let [c (apply (fn [a b] (merge-with + a b)) fs)]
+  (reduce (fn [acc x] (conj acc (merge-with / x c))) [] fs)
+))
 
 (defn -main
   "I don't do a whole lot ... yet."
