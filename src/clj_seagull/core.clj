@@ -25,20 +25,19 @@
     (map (fn [s] (filter (fn [x] (not= "" x)) (str/split s #"\s+")))
       (str/split txt #"[.?!]")))))
 
-(def weighted-next-steps
+(defn weighted-next-steps
   "Returns a weighted sequence of possible next steps"
   [g n]
-  (reduce (fn [acc [n1 n2]] (into acc (repeat (loom.graph/weight g n1 n2)  n2))) [] (loom.graph/out-edges g n)))
+  (reduce (fn [acc [n1 n2]] (into acc (repeat (loom.graph/weight g n1 n2) n2))) [] (loom.graph/out-edges g n)))
   
 (defn random-walk
   "Randomly walk graph and return the path"
   [g start steps]
   ;; Get random nth from sequence of n possible edges
   ;; something like: (rand-nth (repeat edges by weight))
-  
-
-  
-)
+  (loop [pth [start]]
+    (if (= (count pth) steps) pth
+      (recur (conj pth (rand-nth (weighted-next-steps g (first pth))))))))
 
 (defn seeded-walk-freqs
   "Get the frequency with which words appear in a number of random walks"
