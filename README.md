@@ -1,6 +1,9 @@
 # Seagull
 **A seeded graph classifier for lexical communities**
 
+## Software we appreciate
+- [aysylu/loom](https://github.com/aysylu/loom) - Graphs and paths in Clojure
+
 ## License
 
 Copyright © 2018 J.T. Wolohan. 
