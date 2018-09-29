@@ -41,11 +41,16 @@
       (recur (conj pth (rand-nth (weighted-next-steps g (first pth))))))))
 
 (defn seeded-walk-freqs
-  "Get the frequency with which words appear in a number of random walks"
-  [g seeds steps walks]
+  "Get the frequency with which words appear in a number of random walks."
+  [g steps walks seeds]
   (r/fold 
     (fn ([]{}) ([acc nxt] (merge-with + acc (frequencies (random-walk g nxt steps)))))
     (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)))
+    
+(defn multiple-seeded-walks
+  "Perform seeded random walks on multiple sets of seeds"
+  [g steps walks & seeds]
+  (map (fn [x] (seeded-walk-freqs g steps walks x)) seeds))
 
 (defn generate-lexicon
   "Generate a contrastive lexicon by juxtiposing two seeded random walks"
