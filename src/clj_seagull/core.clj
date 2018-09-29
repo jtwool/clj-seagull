@@ -1,6 +1,7 @@
 (ns clj-seagull.core
   (:require [loom.graph :as loom]
             [clojure.string :as str]
+            [clojure.core.reducers :as r]
   (:gen-class)))
 
 (defn cooccurrences
@@ -42,8 +43,9 @@
 (defn seeded-walk-freqs
   "Get the frequency with which words appear in a number of random walks"
   [g seeds steps walks]
-  ;; repeat seeds walks times and merge the results  
-  nil)
+  (r/fold 
+    (fn ([]{}) ([acc nxt] (merge-with + acc (frequencies (random-walk g nxt steps)))))
+    (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)))
 
 (defn generate-lexicon
   "Generate a contrastive lexicon by juxtiposing two seeded random walks"
