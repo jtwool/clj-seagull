@@ -1,4 +1,4 @@
-#Seagull
+# Seagull
 **A seeded graph classifier for lexical communities**
 
 ## License
