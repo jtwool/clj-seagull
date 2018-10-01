@@ -89,10 +89,9 @@
 
   The frequency at which nodes were visited on all the random walks is returned."
   [g steps walks seeds]
-  (r/fold 
-    (fn ([]{}) 
-        ([acc nxt] (merge-with + acc (frequencies (random-walk g nxt steps)))))
-    (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)))
+  (let [xs (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)]
+  (reduce 
+   (fn [acc nxt] (merge-with + acc (frequencies (random-walk g nxt steps)))) {} xs)))
     
 (defn multiple-seeded-walks
   "Perform seeded random walks on multiple sets of seeds.
@@ -137,6 +136,17 @@
   [fs]
   (let [c (apply (fn [a b] (merge-with + a b)) fs)]
   (reduce (fn [acc x] (conj acc (merge-with / x c))) [] fs)))
+
+(defn normalize0
+  "Normalize a frequency map so that all the values are between 0 and 1."
+  [m]
+  (let [vs (vals m)
+        a (apply max vs)
+        b (apply min vs)
+        rng (- a b)]
+  (zipmap
+    (keys m)
+    (map (fn [x] (/ (- x b) rng))  (vals m)))))
 
 (defn normalize
   "Normalize a frequency map so that all the values are between -1 and 1."
