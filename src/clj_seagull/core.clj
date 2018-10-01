@@ -12,9 +12,10 @@
   maintain symmetry.
 
   Example: 
+
   (cooccurrences [\"fly\" \"my\" \"pretties\"])
   >>> {\"fly\" {\"my\" 1, \"pretties\" 1},
-       \"my\" {\"pretties\" 1}, \"pretties\" {}}   "
+       \"my\" {\"pretties\" 1}, \"pretties\" {}}"
   [xs]
   (loop [acc {} 
          xs xs]
@@ -94,16 +95,59 @@
     (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)))
     
 (defn multiple-seeded-walks
-  "Perform seeded random walks on multiple sets of seed."
+  "Perform seeded random walks on multiple sets of seeds.
+
+  This is identitical to calling `seeded-walk-freqs` with identical values for
+  `steps` and `walks multiple times on multiple seed lists. Any number of seed
+  sequences can be used. `seeds` are expected to be a sequence of nodes, just 
+  like in `seeded-walk-freq`.
+
+  Returns the frequencies for the walks corresponding to each set of seeds.
+
+  Example:
+
+    (multiple-seeded-walks mygraph 25 1000 [\"first\" \"seeds\"]
+                                           [\"second\" \"bunch\"])"
   [g steps walks & seeds]
   (map (fn [x] (seeded-walk-freqs g steps walks x)) seeds))
 
 (defn generate-lexicon
-  "Generate a contrastive lexicon by juxtiposing multiple seeded random walks"
+  "Generate contrastive lexicons by juxtiposing multiple seeded random walks.
+
+  Generally, takes any number of frequencies and returns new maps with each 
+  count replaced by the ratio of occurences in the original frequency and 
+  the total rate of occurrence.
+
+  For example:
+
+    (generate-lexicon [{\"this\" 1 \"is\" 2 \"a\" 3 \"test\" 4}
+                       {\"no\" 1 \"this\" 2 \"is\" 3}])
+    >>>[{\"this\" 1/3, \"is\" 2/5, \"a\" 1, \"test\" 1, \"no\" 1} 
+        {\"no\" 1, \"this\" 2/3, \"is\" 3/5, \"a\" 3, \"test\" 4}]
+
+  This function is intended to be used after `multiple-seeded-walks`.
+
+  For example:
+    
+    (generate-lexicon (multiple-seeded-walks mygraph 
+                                             25 
+                                             1000
+                                           [\"first\" \"seeds\"]
+                                           [\"second\" \"bunch\"]))"
   [fs]
   (let [c (apply (fn [a b] (merge-with + a b)) fs)]
-  (reduce (fn [acc x] (conj acc (merge-with / x c))) [] fs)
-))
+  (reduce (fn [acc x] (conj acc (merge-with / x c))) [] fs)))
+
+(defn normalize
+  "Normalize a frequency map so that all the values are between -1 and 1."
+  [m]
+  (let [vs (vals m)
+        a (apply max vs)
+        b (apply min vs)
+        rng (- a b)]
+  (zipmap
+    (keys m)
+    (map (fn [x] (* (- (/ (- x b) rng) 0.5) 2))  (vals m)))))
 
 (defn -main
   "Empty main function."
