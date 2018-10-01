@@ -18,3 +18,28 @@
            "b" {"c" 1 "d" 1} 
            "c" {"d" 1}
            "d" {}})))))
+           
+(deftest random-walk-test
+  (let [g (txt-to-lex-graph "this is is a test")]
+    (testing "Find next steps"
+      (is (= (weighted-next-steps g "this")
+             ["is" "is" "a" "test"])))
+    (testing "Random walk contains start"
+      (is true (contains? (random-walk g "this" 5) "this")))
+    (testing "Random walk is of proper length"
+      (is (= (count (random-walk g "this" 5)) 5)))))
+
+(deftest seeded-walks-tests
+  (let [g (txt-to-lex-graph "this is is a test")
+        swf (seeded-walk-freqs g 2 2 ["this" "a"])
+        mswf (multiple-seeded-walks g 2 2 ["this" "is"] ["a" "test"])
+        kvs {"this" 1 "that" 2 "test" 3}]
+    (testing "Return type of seeded walk is same as frequency counts"
+      (is (= (type swf) (type kvs)))
+      (is (= (type (keys swf)) (type (keys kvs))))
+      (is (= (type (vals swf)) (type (vals kvs)))))
+    (testing "Multiple seeded walks will return multiple frequency counts"
+      (is (= (type mswf) (type (lazy-seq swf swf))))
+      (is (= (type (keys mswf)) (type (keys (lazy-seq swf swf)))))
+      (is (= (type (vals mswf)) (type (vals (lazy-seq swf swf))))))        
+    ))
