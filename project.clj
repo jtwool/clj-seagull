@@ -5,6 +5,7 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [aysylu/loom "1.0.2"]]
+  :plugins [[lein-codox "0.10.4"]]
   :main ^:skip-aot clj-seagull.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})
