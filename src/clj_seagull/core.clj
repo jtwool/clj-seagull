@@ -135,7 +135,10 @@
                                            [\"second\" \"bunch\"]))"
   [fs]
   (let [c (apply (fn [a b] (merge-with + a b)) fs)]
-  (reduce (fn [acc x] (conj acc (merge-with / x c))) [] fs)))
+  (reduce 
+    (fn [acc x] (conj acc (merge-with / x (select-keys c (keys x)))) )
+    [] 
+    fs)))
 
 (defn normalize0
   "Normalize a frequency map so that all the values are between 0 and 1."
