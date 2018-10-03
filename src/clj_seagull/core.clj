@@ -136,7 +136,7 @@
   [fs]
   (let [c (apply (fn [a b] (merge-with + a b)) fs)]
   (reduce 
-    (fn [acc x] (conj acc (merge-with / x (select-keys c (keys x)))) )
+    (fn [acc x] (conj acc (merge-with / x (select-keys c (keys x)))))
     [] 
     fs)))
 
