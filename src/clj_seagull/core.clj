@@ -35,16 +35,22 @@
   the two.
 
   The return object will be a `loom.graph/weighted-graph`."
-  [txt]
+  ([txt]
+  (let [s (fn [x] (str/split x #"[.?!]"))
+        w (fn [x] (str/split x #"\s+"))]
+  (txt-to-lex-graph txt {:sent s :word w})))
+  ([txt tknzr]
+  (let [sf (tknzr :sent)
+        wf (tknzr :word)]
   (loom/weighted-graph
   (reduce
     (fn [acc nxt]
       (merge-with (fn [x y] (merge-with + x y))
                             acc (cooccurrences nxt)))
     {}
-    ;;TODO: replace with real tokenization functions
-    (map (fn [s] (filter (fn [x] (not= "" x)) (str/split s #"\s+")))
-      (str/split txt #"[.?!]")))))
+    (map
+      (fn [s] (filter (fn [x] (not= "" x)) (wf s)))
+      (sf txt)))))))
 
 (defn weighted-next-steps
   "Returns a weighted sequence of possible next steps.
