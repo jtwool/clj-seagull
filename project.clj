@@ -1,4 +1,4 @@
-(defproject clj-seagull "0.1.0"
+(defproject jtwool/clj-seagull "0.1"
   :description "Seagull: A seeded graph classifier for lexical communities."
   :url "http://jtwolohan.com"
   :license {:name "Eclipse Public License"
