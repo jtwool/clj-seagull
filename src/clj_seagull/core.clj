@@ -40,8 +40,7 @@
         w (fn [x] (str/split x #"\s+"))]
   (txt-to-lex-graph txt {:sent s :word w})))
   ([txt tknzr]
-  (let [sf (tknzr :sent)
-        wf (tknzr :word)]
+  (let [sf (tknzr :sent) wf (tknzr :word)]
   (loom/weighted-graph
   (reduce
     (fn [acc nxt]
