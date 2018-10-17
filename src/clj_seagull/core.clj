@@ -94,7 +94,7 @@
   `walks` times (count `seeds`). The total number of steps taken will
   equal `steps` times that number.
 
-  Each walk is taken independent of previous walks.
+  Each walk is taken independent of previous walks. Walks occur in parallel.
 
   The frequency at which nodes were visited on all the random walks is returned."
   [g steps walks seeds]
@@ -144,12 +144,15 @@
                                              1000
                                            [\"first\" \"seeds\"]
                                            [\"second\" \"bunch\"]))"
-  [fs]
-  (let [c (filter (fn [x] (> 1 x)) (apply (fn [a b] (merge-with + a b)) fs))]
+  ([fs] (generate-lexicon fs 3))
+  ([fs n]
+  (let [c (into {} (filter
+                     (fn [x] (< n (val x)))
+                     (apply (fn [a b] (merge-with + a b)) fs)))]
   (reduce
     (fn [acc x] (conj acc (merge-with / x (select-keys c (keys x)))))
     []
-    fs)))
+    fs))))
 
 (defn normalize0
   "Normalize a frequency map so that all the values are between 0 and 1."
