@@ -99,11 +99,10 @@
   The frequency at which nodes were visited on all the random walks is returned."
   [g steps walks seeds]
   (let [xs (reduce (fn [acc nxt] (into acc (repeat walks nxt))) [] seeds)]
-  (reduce
-   (fn [acc nxt]
-       (merge-with + acc (frequencies (random-walk g nxt steps))))
-   {}
-   xs)))
+    (r/fold
+      (fn ([] {}) ([coll1 coll2] (merge-with + coll1 coll2)))
+      (fn [acc nxt] (merge-with + acc (frequencies (random-walk g nxt steps))))
+      xs)))
 
 (defn multiple-seeded-walks
   "Perform seeded random walks on multiple sets of seeds.
@@ -146,7 +145,7 @@
                                            [\"first\" \"seeds\"]
                                            [\"second\" \"bunch\"]))"
   [fs]
-  (let [c (apply (fn [a b] (merge-with + a b)) fs)]
+  (let [c (filter (fn [x] (> 1 x)) (apply (fn [a b] (merge-with + a b)) fs))]
   (reduce
     (fn [acc x] (conj acc (merge-with / x (select-keys c (keys x)))))
     []
