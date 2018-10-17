@@ -177,6 +177,11 @@
     (map (fn [x] (* (- (/ (- x b) rng) 0.5) 2))  (vals m)))))
 
 (defn -main
-  "Empty main function."
+  "Performs a small number of random seeded walks on a file given seeds."
   [& args]
-  (println "Hello, World!"))
+  (doseq [f (seeded-walk-freqs
+              (-> (first args)
+                  (slurp)
+                  (txt-to-lex-graph))
+              20 100 (rest args))]
+    (println (first f) "\t\t\t" (nth f 1) )))
